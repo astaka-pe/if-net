@@ -8,3 +8,9 @@ build/
 *.cpp
 /trash/
 !.gitkeep
+
+kiya_reconstruction.py
+data/
+*.obj
+*.ply
+*.tar.gz
