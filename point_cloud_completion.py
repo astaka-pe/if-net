@@ -35,7 +35,7 @@ def scale(points):
     points -= centers
     points /= total_size
 
-    points /= 1.4
+    points /= 1.0
 
     return points
 
@@ -53,14 +53,14 @@ def occupancy(points, res=128, num_points=3000):
     sampled_points = points[random_indexces]
 
     occupancies = np.zeros(len(grid_points), dtype=np.int8)
-    
+
     _, idx = kdtree.query(sampled_points)
     occupancies[idx] = 1
 
     # reshape the flat occupancy into a 3D tensor
     input = np.reshape(occupancies, (res,)*3)
 
-    return input
+    return sampled_points, input
 
 
     
@@ -76,7 +76,9 @@ if __name__ == "__main__":
     pcd = scale(pcd)
 
     # calculate occupancy
-    pcd_occupancy = occupancy(pcd, args.res, args.num_points)
+    sampled_point, pcd_occupancy = occupancy(pcd, args.res, args.num_points)
+    input_pcd = trimesh.PointCloud(sampled_point)
+    input_pcd.export("{}/{}_scaled.xyz".format(input_dir, mesh_name))
     net = model.ShapeNetPoints()
 
     # prepare the model and load checkpoint
